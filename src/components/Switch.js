@@ -1,11 +1,9 @@
-import React,{Component} from 'react';
-import './Switch.css';
+import React, { Component } from "react";
+import "./Switch.css";
 
-class Switch extends Component{
-    render(){
-        return(
-            <div></div>
-        );
-    }
+class Switch extends Component {
+  render() {
+    return <div></div>;
+  }
 }
 export default Switch;

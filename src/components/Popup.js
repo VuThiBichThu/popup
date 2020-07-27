@@ -2,59 +2,53 @@ import React, { Component } from "react";
 import "./Popup.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ColorCircle from "./ColorCircle";
-import {
-  Col,
-  Row,
-  Button,
-  Label,
-  Input,
-  CustomInput,
-} from "reactstrap";
+import { Col, Row, Button, Label, Input, CustomInput } from "reactstrap";
 import DateCircle from "./DateCircle";
 import Switch from "react-switch";
+import axios from "axios";
 
 class Popup extends Component {
   constructor(props) {
     super(props);
-    // this.raiseInvoiceClicked = this.raiseInvoiceClicked.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.state = {
       name: "",
       slogan: "",
-      checked: false,
-      isAllDay: true,
-      days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      // informations: {
-      //   nameTask: "",
-      //   sloganText: "",
-      //   startDay: "",
-      //   // color:"",
-      //   finalDay: "",
-      //   chooedDays: [],
-      // },
+      color: "",
+      startday: "",
+      endday: "",
+      checked: false, // isAllDay: false,
+
       isFinish: false,
+
+      days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      // nametask,userid,sologan,startdate,enddate,color,daysofweek - backend
     };
   }
-  handleChange(checked) {
+  handleChange = (checked) => {
     this.setState({ checked });
-  }
+  };
 
   getName = (name) => {
     this.setState({ name });
   };
 
-  finishCreateTask = () => {
-    // your axios call here
-    localStorage.setItem("pageData", "Data Retrieved from axios request");
-    // route to new page by changing window.location
-    window.open("http://localhost:3000/", "_blank"); //to open new page
+  handleSubmit = (event) => {
+    event.preventDefault();
+
+    const user = {
+      name: this.state.name,
+    };
+
+    axios.post(``, { user }).then((res) => {
+      console.log(res);
+      console.log(res.data);
+    });
   };
-  // nametask,userid,sologan,startdate,enddate,color,daysofweek
-  updateFinishState() {}
+
   render() {
-    //const days = this.state.days;
     const { days } = this.state;
-    const {checked}=this.state;
+    const { checked } = this.state;
     return (
       <div className="popup">
         <div className="popup_inner">
@@ -67,25 +61,20 @@ class Popup extends Component {
           />
           <Label>Slogan</Label>
           <Input type="textarea" id="sloganText" name="sologan" />
-          <Row >
+          <Row>
             <Col md={10}>
-              
-                <Label>Start Day</Label>
-                <Input type="date" id="startDay" name="startdate" />
-             
+              <Label>Start Day</Label>
+              <Input type="date" id="startDay" name="startdate" />
             </Col>
             <Col md={2}>
-             
-                <Label>Color</Label>
-                <ColorCircle name="color" />
-             
+              <Label>Color</Label>
+              <ColorCircle name="color" />
             </Col>
           </Row>
           <Label>
             <b>Repeat</b>
           </Label>{" "}
           <br></br>
-          {/* <CustomInput type="switch" name="allDay" id="allDay" label="All day" /> */}
           <Switch
             checked={this.state.checked}
             onChange={this.handleChange}
@@ -103,17 +92,17 @@ class Popup extends Component {
             name="daysofweek"
           />{" "}
           <Label>All day</Label>
-          {/* <p>
-                The switch is <span>{this.state.checked ? "on" : "off"}</span>.
-              </p> */}
-            
           <div className="list-days">
-            {days.map((item,index) => (
-              <DateCircle key={index} name={item} checked={checked}></DateCircle>
+            {days.map((item, index) => (
+              <DateCircle
+                key={index}
+                name={item}
+                checked={checked}
+              ></DateCircle>
             ))}
           </div>
           <br></br>
-          <Row >
+          <Row>
             <Col md={4}>
               <Label>
                 <b>End</b>
@@ -136,28 +125,13 @@ class Popup extends Component {
           <Button color="secondary" onClick={this.props.closePopup}>
             CANCEL
           </Button>{" "}
-          <Button color="primary" onClick={this.finishCreateTask}>
+          <Button
+            type="submit"
+            color="primary"
+            onClick={(event) => this.handleSubmit(event)}
+          >
             FINISH
           </Button>{" "}
-          {/* <label htmlFor="material-switch">
-            <span>Switch with style inspired by Material Design</span>
-            <Switch
-              checked={this.state.checked}
-              onChange={this.handleChange}
-              onColor="#86d3ff"
-              onHandleColor="#2693e6"
-              handleDiameter={15}
-              uncheckedIcon={false}
-              checkedIcon={false}
-              boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
-              activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
-              height={15}
-              width={30}
-              className="react-switch"
-              id="material-switch"
-            />
-          </label>
-          <p>The switch is <span>{this.state.checked ? 'on' : 'off'}</span>.</p> */}
         </div>
       </div>
     );
