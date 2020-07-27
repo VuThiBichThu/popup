@@ -4,16 +4,16 @@ import styled from "styled-components";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import { Button } from "reactstrap";
-// type Props = {
-//   name: String,
-//   isAllDay: Boolean
-// }
 class DateCircle extends Component {
   render() {
-    const { name, checked } = this.props;
+    const { name, checked, isChecked, onClick} = this.props;
+    let className = "circle";
+    if(isChecked) {
+      className += ' checked';
+    }
     return (
       <div className="day">
-        <DayPick className="circle" outline color="warning" isAllDay={checked}>
+        <DayPick className={className} outline color="warning" isAllDay={checked} onClick={onClick}>
           {name}
         </DayPick>{" "}
       </div>

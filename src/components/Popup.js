@@ -21,8 +21,37 @@ class Popup extends Component {
 
       isFinish: false,
 
-      days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       // nametask,userid,sologan,startdate,enddate,color,daysofweek - backend
+      listDays: [
+        {
+          day: "Mon",
+          isChecked: false
+        },
+        {
+          day: "Tue",
+          isChecked: false
+        },
+        {
+          day: "Wed",
+          isChecked: false
+        },
+        {
+          day: "Thu",
+          isChecked: false
+        },
+        {
+          day: "Fri",
+          isChecked: false
+        },
+        {
+          day: "Sat",
+          isChecked: false
+        },
+        {
+          day: "Sun",
+          isChecked: false
+        }
+      ]
     };
   }
   handleChange = (checked) => {
@@ -46,8 +75,25 @@ class Popup extends Component {
     });
   };
 
+  changeStatusDay = (item) => {
+    return (event) => {
+      const isChecked = item.isChecked;
+      const {listDays} = this.state;
+      const index = listDays.indexOf(item);
+      this.setState({
+        listDays: [
+          ...listDays.slice(0, index),
+          {
+            ...item, isChecked: !isChecked
+          },
+          ...listDays.slice(index + 1)
+        ]
+      })
+    }
+  }
+
   render() {
-    const { days } = this.state;
+    const { listDays } = this.state;
     const { checked } = this.state;
     return (
       <div className="popup">
@@ -93,11 +139,13 @@ class Popup extends Component {
           />{" "}
           <Label>All day</Label>
           <div className="list-days">
-            {days.map((item, index) => (
+            {listDays.map((item, index) => (
               <DateCircle
                 key={index}
-                name={item}
+                name={item.day}
                 checked={checked}
+                isChecked={item.isChecked}
+                onClick={this.changeStatusDay(item)}
               ></DateCircle>
             ))}
           </div>

@@ -11,3 +11,7 @@
   margin-left: 7px;
   margin-right: 10px;
 }
+.checked {
+  background-color: orange; 
+  color: white;
+}
