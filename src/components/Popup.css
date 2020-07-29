@@ -25,7 +25,11 @@
   margin-top: 5px;
   display: flex;
 }
+.Input{
 
+  border-bottom: 1px solid red !important;
+
+}
 input {
   text-rendering: "";
 }

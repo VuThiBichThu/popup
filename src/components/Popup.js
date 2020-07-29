@@ -167,9 +167,18 @@ class Popup extends Component {
   };
 
   render() {
-    const { listDays } = this.state;
-    const { checked } = this.state;
+    const { listDays,checked,isValidName,isValidEndDate } = this.state;
+    // const { checked } = this.state;
+    let validationErrorName = null;
+    if (!isValidName) {
+      validationErrorName = <p>Please enter a name of a habit!</p>;
+    }
+    let validationErrorEndDate = null;
+    if (!isValidEndDate) {
+      validationErrorEndDate = <p>Please enter end date after start date!</p>;
+    }
     return (
+      
       <div className="popup">
         <OverflowDetector
           className="popup_inner "
@@ -181,7 +190,9 @@ class Popup extends Component {
             id="taskName"
             name="nametask"
             onChange={(event) => this.getName(event.target.value)}
-          />
+            autoFocus 
+            required 
+          /> {validationErrorName}
           <Label>Slogan</Label>
           <Input
             type="textarea"
@@ -194,7 +205,7 @@ class Popup extends Component {
               <Label>Start Day</Label>
               <Input
                 type="date"
-                id="startDay"
+                               id="startDay"
                 name="startdate"
                 onChange={(event) => this.getStartDate(event.target.value)}
               />
@@ -249,7 +260,7 @@ class Popup extends Component {
             id="finalDay"
             name="enddate"
             onChange={(event) => this.getEndDate(event.target.value)}
-          />
+          />{validationErrorEndDate}
           <br></br>
           <Button color="secondary" onClick={this.props.closePopup}>
             CANCEL
