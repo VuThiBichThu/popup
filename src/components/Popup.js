@@ -134,7 +134,7 @@ class Popup extends Component {
       !this.state.isValidSlogan ||
       !this.state.isValidListDays
     ) {
-
+      alert("Let's create a new habit!") ;
       console.log("Sorry!");
     } else {
       axios
