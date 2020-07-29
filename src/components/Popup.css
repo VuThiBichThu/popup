@@ -24,9 +24,8 @@
   margin-top: 5px;
   display: flex;
 }
-.Input{
-
-  border-bottom: 1px solid red !important;
+.warning{
+color:  red !important;
 
 }
 input {
