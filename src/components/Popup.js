@@ -6,98 +6,175 @@ import { Col, Row, Button, Label, Input, CustomInput } from "reactstrap";
 import DateCircle from "./DateCircle";
 import Switch from "react-switch";
 import axios from "axios";
-
+import { OverflowDetector } from "react-overflow";
 class Popup extends Component {
   constructor(props) {
     super(props);
-    this.handleChange = this.handleChange.bind(this);
     this.state = {
-      name: "",
+      nametask: "",
+      isValidName: false,
       slogan: "",
-      color: "",
-      startday: "",
-      endday: "",
+      isValidSlogan: false,
+      color: "#F17013",
+      startdate: "",
+      enddate: "",
       checked: false, // isAllDay: false,
-
       isFinish: false,
-
-      // nametask,userid,sologan,startdate,enddate,color,daysofweek - backend
+      // nametask,sologan,startdate,enddate,color,daysofweek - backend
       listDays: [
         {
           day: "Mon",
-          isChecked: false
+          isChecked: false,
         },
         {
           day: "Tue",
-          isChecked: false
+          isChecked: false,
         },
         {
           day: "Wed",
-          isChecked: false
+          isChecked: false,
         },
         {
           day: "Thu",
-          isChecked: false
+          isChecked: false,
         },
         {
           day: "Fri",
-          isChecked: false
+          isChecked: false,
         },
         {
           day: "Sat",
-          isChecked: false
+          isChecked: false,
         },
         {
           day: "Sun",
-          isChecked: false
-        }
-      ]
+          isChecked: false,
+        },
+      ],
+      isValidListDays: false,
     };
   }
-  handleChange = (checked) => {
-    this.setState({ checked });
+
+  // get data
+  getName = (nametask) => {
+    if (nametask.trim() !== "") {
+      this.setState({ nametask, isValidName: true });
+    }
+  };
+  getSlogan = (slogan) => {
+    if (slogan.trim() !== "") this.setState({ slogan, isValidSlogan: true });
+  };
+  getStartDate = (startdate) => {
+    this.setState({ startdate });
+  };
+  getEndDate = (enddate) => {
+    this.setState({ enddate });
+  };
+  getColor = (color) => {
+    this.setState({ color });
   };
 
-  getName = (name) => {
-    this.setState({ name });
+  //
+  handleChangeColor = (color) => {
+    this.setState({ color: color.hex });
+  };
+
+  handleChange = () => {
+    const { checked, listDays } = this.state;
+    const updateListDays = listDays.map((item) => ({
+      ...item,
+      isChecked: !checked,
+    }));
+
+
+    this.setState((preState) => ({
+      checked: !preState.checked,
+      listDays: updateListDays,
+      isValidListDays: !preState.checked,
+    }));
   };
 
   handleSubmit = (event) => {
     event.preventDefault();
-
-    const user = {
-      name: this.state.name,
-    };
-
-    axios.post(``, { user }).then((res) => {
-      console.log(res);
-      console.log(res.data);
+    const updateListDays = [...this.state.listDays];
+    const sunDay = updateListDays.pop();
+    updateListDays.splice(0, 0, sunDay);
+    let daysofweek = 0;
+    updateListDays.map((item, index) => {
+      if (item.isChecked) daysofweek += Math.pow(2, index);
+      return 1;
     });
+
+    const information = {
+      nametask: this.state.nametask,
+      slogan: this.state.slogan,
+      color: this.state.color,
+      startdate: this.state.startdate,
+      enddate: this.state.enddate,
+      daysofweek: daysofweek,
+    };
+    console.log(information);
+    console.log(this.state.isValidName);
+    console.log(this.state.isValidSlogan);
+    console.log(this.state.isValidListDays);
+    if (
+      this.state.isValidName === false ||
+      this.state.isValidSlogan === false ||
+      this.state.isValidListDays === false
+    ) {
+      console.log("Sorry!");
+    } else {
+      axios
+        .post(`localhost/api/v1/tasks`, { information })
+        .then((res) => {
+          console.log(res);
+          console.log(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   };
 
-  changeStatusDay = (item) => {
-    return (event) => {
-      const isChecked = item.isChecked;
-      const {listDays} = this.state;
-      const index = listDays.indexOf(item);
-      this.setState({
-        listDays: [
-          ...listDays.slice(0, index),
-          {
-            ...item, isChecked: !isChecked
-          },
-          ...listDays.slice(index + 1)
-        ]
-      })
+  changeStatusDay = (index) => {
+    let isValidListDays = this.state.isValidListDays;
+    const updateListDay = { ...this.state.listDays[index] };
+    updateListDay.isChecked = !this.state.listDays[index].isChecked;
+    const updateListDays = [...this.state.listDays];
+    updateListDays[index] = updateListDay;
+
+    let isAllDay = true;
+    const checkIsAllDay = updateListDays.filter(
+      (item) => item.isChecked === false
+    );
+    if (checkIsAllDay.length) {
+      isAllDay = false;
     }
-  }
+
+    for (let i = 0; i < updateListDays.length; i++) {
+      if (updateListDays[i].isChecked === true) {
+        isValidListDays = true;
+
+        break;
+      }
+    }
+
+    this.setState({
+      listDays: updateListDays,
+      checked: isAllDay,
+      isValidListDays: isValidListDays,
+    });
+  };
 
   render() {
     const { listDays } = this.state;
     const { checked } = this.state;
     return (
       <div className="popup">
-        <div className="popup_inner">
+        <OverflowDetector
+          className="popup_inner "
+          style={{ width: "500px", height: "650px" }}
+        >
           <h2> {this.props.text} </h2>
           <Label>Name</Label>
           <Input
@@ -106,15 +183,29 @@ class Popup extends Component {
             onChange={(event) => this.getName(event.target.value)}
           />
           <Label>Slogan</Label>
-          <Input type="textarea" id="sloganText" name="sologan" />
+          <Input
+            type="textarea"
+            id="sloganText"
+            name="sologan"
+            onChange={(event) => this.getSlogan(event.target.value)}
+          />
           <Row>
             <Col md={10}>
               <Label>Start Day</Label>
-              <Input type="date" id="startDay" name="startdate" />
+              <Input
+                type="date"
+                id="startDay"
+                name="startdate"
+                onChange={(event) => this.getStartDate(event.target.value)}
+              />
             </Col>
             <Col md={2}>
               <Label>Color</Label>
-              <ColorCircle name="color" />
+              <ColorCircle
+                name="color"
+                onHandleColor={this.handleChangeColor}
+                color={this.state.color}
+              />
             </Col>
           </Row>
           <Label>
@@ -145,30 +236,20 @@ class Popup extends Component {
                 name={item.day}
                 checked={checked}
                 isChecked={item.isChecked}
-                onClick={this.changeStatusDay(item)}
+                onClick={() => this.changeStatusDay(index)}
               ></DateCircle>
             ))}
           </div>
           <br></br>
-          <Row>
-            <Col md={4}>
-              <Label>
-                <b>End</b>
-              </Label>
-            </Col>
-            <Col md={4}>
-              <CustomInput type="radio" name="dayRadio" id="onDay" label="On" />
-            </Col>
-            <Col md={4}>
-              <CustomInput
-                type="radio"
-                name="dayRadio"
-                id="afterDay"
-                label="After"
-              />
-            </Col>
-          </Row>
-          <Input type="date" id="finalDay" name="enddate" />
+          <Label>
+            <b>End</b>
+          </Label>
+          <Input
+            type="date"
+            id="finalDay"
+            name="enddate"
+            onChange={(event) => this.getEndDate(event.target.value)}
+          />
           <br></br>
           <Button color="secondary" onClick={this.props.closePopup}>
             CANCEL
@@ -180,7 +261,7 @@ class Popup extends Component {
           >
             FINISH
           </Button>{" "}
-        </div>
+        </OverflowDetector>
       </div>
     );
   }

@@ -1,17 +1,14 @@
-import React from "react";
+import React, { Component } from "react";
 import reactCSS from "reactcss";
 import { SketchPicker } from "react-color";
 
-class ColorCircle extends React.Component {
-  state = {
-    displayColorPicker: false,
-    color: {
-      r: "241",
-      g: "112",
-      b: "19",
-      a: "1",
-    },
-  };
+class ColorCircle extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      displayColorPicker: false,
+    };
+  }
 
   handleClick = () => {
     this.setState({ displayColorPicker: !this.state.displayColorPicker });
@@ -19,10 +16,6 @@ class ColorCircle extends React.Component {
 
   handleClose = () => {
     this.setState({ displayColorPicker: false });
-  };
-
-  handleChange = (color) => {
-    this.setState({ color: color.rgb });
   };
 
   render() {
@@ -33,7 +26,7 @@ class ColorCircle extends React.Component {
           borderRadius: "50%",
           width: 25,
           height: 25,
-          background: `rgba(${this.state.color.r}, ${this.state.color.g}, ${this.state.color.b}, ${this.state.color.a})`,
+          background: `${ this.props.color}`,
         },
         swatch: {
           padding: "5px",
@@ -66,8 +59,8 @@ class ColorCircle extends React.Component {
           <div style={styles.popover}>
             <div style={styles.cover} onClick={this.handleClose} />
             <SketchPicker
-              color={this.state.color}
-              onChange={this.handleChange}
+              color={this.props.color}
+              onChange={this.props.onHandleColor}
             />
           </div>
         ) : null}
