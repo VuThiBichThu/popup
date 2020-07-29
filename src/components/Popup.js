@@ -2,11 +2,12 @@ import React, { Component } from "react";
 import "./Popup.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ColorCircle from "./ColorCircle";
-import { Col, Row, Button, Label, Input, CustomInput } from "reactstrap";
+import { Col, Row, Button, Label, Input } from "reactstrap";
 import DateCircle from "./DateCircle";
 import Switch from "react-switch";
 import axios from "axios";
 import { OverflowDetector } from "react-overflow";
+import moment from "moment";
 class Popup extends Component {
   constructor(props) {
     super(props);
@@ -17,7 +18,9 @@ class Popup extends Component {
       isValidSlogan: false,
       color: "#F17013",
       startdate: "",
+      isValidStartDate: false,
       enddate: "",
+      isValidEndDate: false,
       checked: false, // isAllDay: false,
       isFinish: false,
       // nametask,sologan,startdate,enddate,color,daysofweek - backend
@@ -57,6 +60,7 @@ class Popup extends Component {
 
   // get data
   getName = (nametask) => {
+    console.log(nametask);
     if (nametask.trim() !== "") {
       this.setState({ nametask, isValidName: true });
     }
@@ -65,10 +69,20 @@ class Popup extends Component {
     if (slogan.trim() !== "") this.setState({ slogan, isValidSlogan: true });
   };
   getStartDate = (startdate) => {
+    const startDate = moment(startdate)._i;
+    console.log("star" + startDate);
     this.setState({ startdate });
   };
   getEndDate = (enddate) => {
-    this.setState({ enddate });
+    const endDate = moment(enddate)._i;
+    const startDate = moment(this.state.startdate)._i;
+    if (moment(endDate).isAfter(moment(startDate))) {
+      this.setState({ isValidEndDate: true });
+      console.log("end" + endDate);
+      this.setState({ enddate });
+    }
+
+    console.log(moment(endDate).isAfter(moment(startDate)));
   };
   getColor = (color) => {
     this.setState({ color });
@@ -85,7 +99,6 @@ class Popup extends Component {
       ...item,
       isChecked: !checked,
     }));
-
 
     this.setState((preState) => ({
       checked: !preState.checked,
@@ -118,9 +131,9 @@ class Popup extends Component {
     console.log(this.state.isValidSlogan);
     console.log(this.state.isValidListDays);
     if (
-      this.state.isValidName === false ||
-      this.state.isValidSlogan === false ||
-      this.state.isValidListDays === false
+      !this.state.isValidName ||
+      !this.state.isValidSlogan ||
+      !this.state.isValidListDays
     ) {
       console.log("Sorry!");
     } else {
@@ -167,18 +180,30 @@ class Popup extends Component {
   };
 
   render() {
-    const { listDays,checked,isValidName,isValidEndDate } = this.state;
-    // const { checked } = this.state;
+    const {
+      listDays,
+      checked,
+      isValidName,
+      isValidListDays,
+      isValidEndDate,
+    } = this.state;
+
     let validationErrorName = null;
     if (!isValidName) {
-      validationErrorName = <p>Please enter a name of a habit!</p>;
+      validationErrorName = <label>Please enter a name of a habit!</label>;
+    }
+    let validationErrorDays = null;
+    if (!isValidListDays) {
+      validationErrorDays = <label>Please choose 1 day at least!</label>;
     }
     let validationErrorEndDate = null;
     if (!isValidEndDate) {
-      validationErrorEndDate = <p>Please enter end date after start date!</p>;
+      validationErrorEndDate = (
+        <label>Please enter end date after start date!</label>
+      );
     }
+
     return (
-      
       <div className="popup">
         <OverflowDetector
           className="popup_inner "
@@ -187,12 +212,13 @@ class Popup extends Component {
           <h2> {this.props.text} </h2>
           <Label>Name</Label>
           <Input
-            id="taskName"
+            id="namestask"
             name="nametask"
             onChange={(event) => this.getName(event.target.value)}
-            autoFocus 
-            required 
-          /> {validationErrorName}
+            autoFocus
+          />{" "}
+          {validationErrorName}
+          <br></br>
           <Label>Slogan</Label>
           <Input
             type="textarea"
@@ -205,7 +231,6 @@ class Popup extends Component {
               <Label>Start Day</Label>
               <Input
                 type="date"
-                               id="startDay"
                 name="startdate"
                 onChange={(event) => this.getStartDate(event.target.value)}
               />
@@ -222,6 +247,7 @@ class Popup extends Component {
           <Label>
             <b>Repeat</b>
           </Label>{" "}
+          {validationErrorDays}
           <br></br>
           <Switch
             checked={this.state.checked}
@@ -257,10 +283,10 @@ class Popup extends Component {
           </Label>
           <Input
             type="date"
-            id="finalDay"
             name="enddate"
             onChange={(event) => this.getEndDate(event.target.value)}
-          />{validationErrorEndDate}
+          />
+          {validationErrorEndDate}
           <br></br>
           <Button color="secondary" onClick={this.props.closePopup}>
             CANCEL
