@@ -23,7 +23,7 @@ class Popup extends Component {
       isValidEndDate: false,
       checked: false, // isAllDay: false,
       isFinish: false,
-      // nametask,sologan,startdate,enddate,color,daysofweek - backend
+
       listDays: [
         {
           day: "Mon",
@@ -81,7 +81,7 @@ class Popup extends Component {
     moment(endDate).isAfter(moment(startDate))
       ? this.setState({ enddate, isValidEndDate: true })
       : this.setState({ isValidEndDate: false });
-    };
+  };
   getColor = (color) => {
     this.setState({ color });
   };
@@ -101,9 +101,37 @@ class Popup extends Component {
     this.setState((preState) => ({
       checked: !preState.checked,
       listDays: updateListDays,
-      // isValidListDays: !preState.checked,\
       isValidListDays: !this.state.checked,
     }));
+  };
+
+  changeStatusDay = (index) => {
+    let isValidListDays = this.state.isValidListDays;
+    const updateListDay = { ...this.state.listDays[index] };
+    updateListDay.isChecked = !this.state.listDays[index].isChecked;
+    const updateListDays = [...this.state.listDays];
+    updateListDays[index] = updateListDay;
+
+    let isAllDay = true;
+    const checkIsAllDay = updateListDays.filter(
+      (item) => item.isChecked === false
+    );
+    if (checkIsAllDay.length) {
+      isAllDay = false;
+    }
+    let count = 0;
+    for (let i = 0; i < updateListDays.length; i++) {
+      if (updateListDays[i].isChecked === true) {
+        count++;
+      }
+    }
+    count !== 0 ? (isValidListDays = true) : (isValidListDays = false);
+
+    this.setState({
+      listDays: updateListDays,
+      checked: isAllDay,
+      isValidListDays: isValidListDays,
+    });
   };
 
   handleSubmit = (event) => {
@@ -134,7 +162,7 @@ class Popup extends Component {
       !this.state.isValidSlogan ||
       !this.state.isValidListDays
     ) {
-      alert("Let's create a new habit!") ;
+      alert("Something went wrong!");
       console.log("Sorry!");
     } else {
       axios
@@ -149,35 +177,6 @@ class Popup extends Component {
     }
   };
 
-  changeStatusDay = (index) => {
-    let isValidListDays = this.state.isValidListDays;
-    const updateListDay = { ...this.state.listDays[index] };
-    updateListDay.isChecked = !this.state.listDays[index].isChecked;
-    const updateListDays = [...this.state.listDays];
-    updateListDays[index] = updateListDay;
-
-    let isAllDay = true;
-    const checkIsAllDay = updateListDays.filter(
-      (item) => item.isChecked === false
-    );
-    if (checkIsAllDay.length) {
-      isAllDay = false;
-    }
-
-    for (let i = 0; i < updateListDays.length; i++) {
-      if (updateListDays[i].isChecked === true) {
-        isValidListDays = true;
-        break;
-      }
-    }
-
-    this.setState({
-      listDays: updateListDays,
-      checked: isAllDay,
-      isValidListDays: isValidListDays,
-    });
-  };
-
   render() {
     const {
       listDays,
@@ -189,16 +188,22 @@ class Popup extends Component {
 
     let validationErrorName = null;
     if (!isValidName) {
-      validationErrorName = <label className="warning">Please enter a name of a habit!</label>;
+      validationErrorName = (
+        <label className="warning">Please enter a name of a habit!</label>
+      );
     }
     let validationErrorDays = null;
     if (!isValidListDays) {
-      validationErrorDays = <label className="warning">Please choose 1 day at least!</label>;
+      validationErrorDays = (
+        <label className="warning">Please choose 1 day at least!</label>
+      );
     }
     let validationErrorEndDate = null;
     if (!isValidEndDate) {
       validationErrorEndDate = (
-        <label className="warning">Please enter end date after start date!</label>
+        <label className="warning">
+          Please enter end date after start date!
+        </label>
       );
     }
 
