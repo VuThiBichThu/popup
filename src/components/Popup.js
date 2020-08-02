@@ -22,7 +22,7 @@ class Popup extends Component {
       enddate: "",
       isValidEndDate: false,
       checked: false, // isAllDay: false,
-      isFinish: false,
+      // isFinish: false,
 
       listDays: [
         {
@@ -55,15 +55,24 @@ class Popup extends Component {
         },
       ],
       isValidListDays: false,
+      isDone:false
     };
   }
-
+checkFinish=()=>{
+  let isFinish;
+  isFinish=this.state.isValidName&&this.state.isValidListDays&&this.state.isValidEndDate;
+  console.log(this.state.isValidName);
+  console.log(this.state.isValidEndDate);
+  console.log(this.state.isValidListDays);
+  this.setState({isDone:isFinish});
+}
   // get data
   getName = (nametask) => {
     console.log(nametask);
     nametask.trim() !== ""
       ? this.setState({ nametask, isValidName: true })
-      : this.setState({ isValidName: false });
+      : this.setState({ isValidName: false});
+      this.checkFinish();
   };
   getSlogan = (slogan) => {
     if (slogan.trim() !== "") {
@@ -81,10 +90,14 @@ class Popup extends Component {
     moment(endDate).isAfter(moment(startDate))
       ? this.setState({ enddate, isValidEndDate: true })
       : this.setState({ isValidEndDate: false });
+      this.checkFinish();
   };
   getColor = (color) => {
     this.setState({ color });
   };
+
+
+
 
   //
   handleChangeColor = (color) => {
@@ -103,6 +116,7 @@ class Popup extends Component {
       listDays: updateListDays,
       isValidListDays: !this.state.checked,
     }));
+    this.checkFinish();
   };
 
   changeStatusDay = (index) => {
@@ -132,6 +146,7 @@ class Popup extends Component {
       checked: isAllDay,
       isValidListDays: isValidListDays,
     });
+    this.checkFinish();
   };
 
   handleSubmit = (event) => {
@@ -165,6 +180,7 @@ class Popup extends Component {
       alert("Something went wrong!");
       console.log("Sorry!");
     } else {
+      
       axios
         .post(`localhost/api/v1/tasks`, { information })
         .then((res) => {
@@ -299,6 +315,7 @@ class Popup extends Component {
             type="submit"
             color="primary"
             onClick={(event) => this.handleSubmit(event)}
+            disabled={!this.state.isDone}
           >
             FINISH
           </Button>{" "}

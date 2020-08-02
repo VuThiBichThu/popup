@@ -13,7 +13,7 @@ class DateCircle extends Component {
     }
     return (
       <div className="day">
-        <DayPick className={className} outline color="warning" isAllDay={checked} onClick={onClick}>
+        <DayPick className={className} outline color="warning" isallday={checked.toString()} onClick={onClick}>
           {name}
         </DayPick>{" "}
       </div>
