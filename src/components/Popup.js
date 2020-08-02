@@ -15,14 +15,12 @@ class Popup extends Component {
       nametask: "",
       isValidName: false,
       slogan: "",
-      isValidSlogan: false,
       color: "#F17013",
       startdate: "",
       isValidStartDate: false,
       enddate: "",
       isValidEndDate: false,
-      checked: false, // isAllDay: false,
-      // isFinish: false,
+      checked: false,
 
       listDays: [
         {
@@ -55,55 +53,120 @@ class Popup extends Component {
         },
       ],
       isValidListDays: false,
-      isDone:false
+      isDone: false,
+
+      isTouchedName: false,
+      isTouchedDays: false,
+      isTouchedStartD: false,
+      isTouchedEndD: false,
     };
   }
-checkFinish=()=>{
-  let isFinish;
-  isFinish=this.state.isValidName&&this.state.isValidListDays&&this.state.isValidEndDate;
-  console.log(this.state.isValidName);
-  console.log(this.state.isValidEndDate);
-  console.log(this.state.isValidListDays);
-  this.setState({isDone:isFinish});
-}
+  checkFinish = (isValidN, isValidD, isValidE) => {
+    let isFinish;
+    isFinish = isValidN && isValidD && isValidE;
+    console.log("isFinish:" + isFinish);
+    console.log(isValidN);
+    console.log(isValidD);
+    console.log(isValidE);
+    this.setState({ isDone: isFinish });
+  };
   // get data
   getName = (nametask) => {
-    console.log(nametask);
-    nametask.trim() !== ""
-      ? this.setState({ nametask, isValidName: true })
-      : this.setState({ isValidName: false});
-      this.checkFinish();
+    let isValidN;
+    if (nametask.trim() !== "") {
+      isValidN = true;
+      this.setState({ nametask, isValidName: isValidN });
+    } else {
+      isValidN = false;
+      this.setState({ isValidName: isValidN });
+    }
+    this.setState({ isTouchedName: true });
+
+    this.checkFinish(
+      isValidN,
+      this.state.isValidListDays,
+      this.state.isValidEndDate
+    );
   };
   getSlogan = (slogan) => {
     if (slogan.trim() !== "") {
-      this.setState({ slogan, isValidSlogan: true });
+      this.setState({ slogan });
     }
   };
+
   getStartDate = (startdate) => {
-    const startDate = moment(startdate)._i;
-    console.log("star" + startDate);
-    this.setState({ startdate });
+    // const startDate = moment(startdate)._i;
+    // console.log("start " + startDate);
+    // const endDate = moment(this.state.enddate)._i;
+    //   let isValid;
+    //  (moment(endDate).isAfter(moment(startDate))&&endDate !== "") ?(isValid=true):(isValid=false);
+
+    //   (startDate !== ""&&isValid)
+    //    ? this.setState({ startdate: startDate, isValidStartDate: true })
+    //     : this.setState({ isValidStartDate: false });
+
+    //     this.setState({isTouchedStartD:true});
+
+    let isValid;
+
+    const startDate = moment(startdate).valueOf();
+
+    const endDate = moment(this.state.enddate).valueOf();
+
+    const start = moment(startdate)._i;
+
+    if (endDate) {
+      console.log("startDay:", startDate);
+      console.log("endday:", endDate);
+      console.log("time:", endDate - startDate);
+      isValid = endDate - startDate > 0;
+      if (isValid && startDate) {
+        this.setState({ startdate: start, isValidStartDate: true });
+      } else {
+        this.setState({ isValidStartDate: false });
+      }
+    } else {
+      start !== "" && startDate
+        ? this.setState({ startdate: start, isValidStartDate: true })
+        : this.setState({ isValidStartDate: false });
+    }
+
+    // this.setState({ isTouchedStartD: true });
   };
+
   getEndDate = (enddate) => {
     const endDate = moment(enddate)._i;
+    console.log("end " + enddate);
     const startDate = moment(this.state.startdate)._i;
-    moment(endDate).isAfter(moment(startDate))
-      ? this.setState({ enddate, isValidEndDate: true })
-      : this.setState({ isValidEndDate: false });
-      this.checkFinish();
+    let isValisE;
+    if (moment(endDate).isAfter(moment(startDate))) {
+      isValisE = true;
+      this.setState({ enddate: endDate, isValidEndDate: isValisE });
+    } else {
+      isValisE = false;
+      this.setState({ isValidEndDate: isValisE });
+    }
+    this.setState({ isTouchedEndD: true });
+    this.checkFinish(
+      this.state.isValidName,
+      this.state.isValidListDays,
+      isValisE
+    );
   };
+
   getColor = (color) => {
     this.setState({ color });
   };
 
+  handleStartDateFeedback = () => {
+    this.setState({ isTouchedStartD: true });
+  };
 
-
-
-  //
   handleChangeColor = (color) => {
     this.setState({ color: color.hex });
   };
 
+  //switch
   handleChange = () => {
     const { checked, listDays } = this.state;
     const updateListDays = listDays.map((item) => ({
@@ -114,9 +177,14 @@ checkFinish=()=>{
     this.setState((preState) => ({
       checked: !preState.checked,
       listDays: updateListDays,
-      isValidListDays: !this.state.checked,
+      isValidListDays: !preState.checked, //
+      isTouchedDays: true,
     }));
-    this.checkFinish();
+    this.checkFinish(
+      this.state.isValidName,
+      !checked,
+      this.state.isValidEndDate
+    );
   };
 
   changeStatusDay = (index) => {
@@ -145,12 +213,23 @@ checkFinish=()=>{
       listDays: updateListDays,
       checked: isAllDay,
       isValidListDays: isValidListDays,
+      isTouchedDays: true,
     });
-    this.checkFinish();
+    this.checkFinish(
+      this.state.isValidName,
+      isValidListDays,
+      this.state.isValidEndDate
+    );
   };
 
   handleSubmit = (event) => {
     event.preventDefault();
+    this.setState({
+      isTouchedName: true,
+      isTouchedDays: true,
+      isTouchedStartD: true,
+      isTouchedEndD: true,
+    });
     const updateListDays = [...this.state.listDays];
     const sunDay = updateListDays.pop();
     updateListDays.splice(0, 0, sunDay);
@@ -169,18 +248,18 @@ checkFinish=()=>{
       daysofweek: daysofweek,
     };
     console.log(information);
-    console.log(this.state.isValidName);
-    console.log(this.state.isValidEndDate);
-    console.log(this.state.isValidListDays);
+    console.log("after" + this.state.isValidName);
+    console.log("after" + this.state.isValidListDays);
+    console.log("after" + this.state.isValidEndDate);
+
     if (
       !this.state.isValidName ||
-      !this.state.isValidSlogan ||
+      !this.state.isValidEndDate ||
       !this.state.isValidListDays
     ) {
-      alert("Something went wrong!");
+      // alert("Something went wrong!");
       console.log("Sorry!");
     } else {
-      
       axios
         .post(`localhost/api/v1/tasks`, { information })
         .then((res) => {
@@ -199,23 +278,36 @@ checkFinish=()=>{
       checked,
       isValidName,
       isValidListDays,
+      isValidStartDate,
       isValidEndDate,
+      isTouchedName,
+      isTouchedDays,
+      isTouchedStartD,
+      isTouchedEndD,
     } = this.state;
 
     let validationErrorName = null;
-    if (!isValidName) {
+    if (!isValidName && isTouchedName) {
       validationErrorName = (
-        <label className="warning">Please enter a name of a habit!</label>
+        <label className="warning">Please enter habit name!</label>
       );
     }
     let validationErrorDays = null;
-    if (!isValidListDays) {
+    if (!isValidListDays && isTouchedDays) {
       validationErrorDays = (
         <label className="warning">Please choose 1 day at least!</label>
       );
     }
+
+    let validationErrorStartDate = null;
+    if (!isValidStartDate && isTouchedStartD) {
+      validationErrorStartDate = (
+        <label className="warning">Please enter a valid start date!</label>
+      );
+    }
+
     let validationErrorEndDate = null;
-    if (!isValidEndDate) {
+    if (!isValidEndDate && isTouchedEndD) {
       validationErrorEndDate = (
         <label className="warning">
           Please enter end date after start date!
@@ -253,7 +345,9 @@ checkFinish=()=>{
                 type="date"
                 name="startdate"
                 onChange={(event) => this.getStartDate(event.target.value)}
-              />
+                onClick={this.handleStartDateFeedback}
+              ></Input>
+              {validationErrorStartDate}
             </Col>
             <Col md={2}>
               <Label>Color</Label>
@@ -264,28 +358,33 @@ checkFinish=()=>{
               />
             </Col>
           </Row>
-          <Label>
-            <b>Repeat</b>
-          </Label>{" "}
+          <Row>
+            <Col md={2}>
+              <Label>
+                <b>Repeat</b>
+              </Label>{" "}
+            </Col>
+            <Col>
+              <Switch
+                checked={this.state.checked}
+                onChange={this.handleChange}
+                onColor="#ffa500"
+                onHandleColor="#ffffff"
+                handleDiameter={15}
+                uncheckedIcon={false}
+                checkedIcon={false}
+                boxShadow="0px 1px 1px rgba(0, 0, 0, 0.2)"
+                activeBoxShadow="0px 0px 1px 5px rgba(0, 0, 0, 0.2)"
+                height={15}
+                width={30}
+                className="react-switch"
+                id="material-switch"
+                name="daysofweek"
+              />{" "}
+              <Label>All day</Label>
+            </Col>
+          </Row>
           {validationErrorDays}
-          <br></br>
-          <Switch
-            checked={this.state.checked}
-            onChange={this.handleChange}
-            onColor="#86d3ff"
-            onHandleColor="#2693e6"
-            handleDiameter={15}
-            uncheckedIcon={false}
-            checkedIcon={false}
-            boxShadow="0px 1px 1px rgba(0, 0, 0, 0.2)"
-            activeBoxShadow="0px 0px 1px 5px rgba(0, 0, 0, 0.2)"
-            height={15}
-            width={30}
-            className="react-switch"
-            id="material-switch"
-            name="daysofweek"
-          />{" "}
-          <Label>All day</Label>
           <div className="list-days">
             {listDays.map((item, index) => (
               <DateCircle
@@ -305,6 +404,7 @@ checkFinish=()=>{
             type="date"
             name="enddate"
             onChange={(event) => this.getEndDate(event.target.value)}
+            disabled={!isValidStartDate && !isTouchedEndD}
           />
           {validationErrorEndDate}
           <br></br>
@@ -315,7 +415,6 @@ checkFinish=()=>{
             type="submit"
             color="primary"
             onClick={(event) => this.handleSubmit(event)}
-            disabled={!this.state.isDone}
           >
             FINISH
           </Button>{" "}
