@@ -319,8 +319,9 @@ class Popup extends Component {
       <div className="popup">
         <OverflowDetector
           className="popup_inner "
-          style={{ width: "500px", height: "650px" }}
+          style={{ width: "500px", height: "640px", position: "absolute" }}
         >
+        <br></br>
           <h2> {this.props.text} </h2>
           <Label>Name</Label>
           <Input
@@ -396,7 +397,7 @@ class Popup extends Component {
               ></DateCircle>
             ))}
           </div>
-          <br></br>
+         
           <Label>
             <b>End</b>
           </Label>

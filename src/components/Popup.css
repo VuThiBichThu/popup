@@ -10,10 +10,11 @@
   background-color: rgba(0, 0, 0, 0.5);
 }
 .popup_inner {
+  flex: 1;
+  max-height: 100%;
   position: absolute;
-
   top: 2%;
-  bottom: 5%;
+  bottom: 10%;
   margin: auto;
   padding-left: 20px;
   padding-right: 25px;
