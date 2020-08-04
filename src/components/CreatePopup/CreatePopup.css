@@ -1,4 +1,4 @@
-.childpopup {
+.popup {
     position: fixed;
     width: 100%;
     height: 100%;
@@ -9,11 +9,12 @@
     margin: auto;
     background-color: rgba(0, 0, 0, 0.5);
   }
-  .childpopup_inner {
+  .popup_inner {
+    flex: 1;
+    max-height: 100%;
     position: absolute;
-  
-    top: 20%;
-    bottom: 100%;
+    top: 2%;
+    bottom: 10%;
     margin: auto;
     padding-left: 20px;
     padding-right: 25px;
@@ -28,31 +29,9 @@
   color:  red !important;
   
   }
-  
-  .size {
-  height: 50;
-  width: 50;
-  }
-  
-  .button1 {
-    border: 2px solid #e3e6e3;
-  
-  }
-  
-  .button1:hover {
-    border: 2px solid #4CAF50;
-  }
-  
-  
-  .button2 {
-    border: 2px solid #e3e6e3;
-  }
-  
-  .button2:hover {
-    border: 2px solid #e91313;
-  }
-  
   input {
     text-rendering: "";
   }
+  
+  
   

@@ -1,14 +1,15 @@
 import React, { Component } from "react";
-import "./Popup.css";
+import "./CreatePopup.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import ColorCircle from "./ColorCircle";
+import DateCircle from "./../DateCircle/DateCircle";
+import ColorCircle from "./../ColorCircle/ColorCircle";
 import { Col, Row, Button, Label, Input } from "reactstrap";
-import DateCircle from "./DateCircle";
+
 import Switch from "react-switch";
 import axios from "axios";
 import { OverflowDetector } from "react-overflow";
 import moment from "moment";
-class Popup extends Component {
+class CreatePopup extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -403,4 +404,4 @@ class Popup extends Component {
   }
 }
 
-export default Popup;
+export default CreatePopup;
